@@ -1,51 +1,85 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(leaflet)
-library(maps)
-library(RColorBrewer)
+#library(maps)
+#library(RColorBrewer)
 library(readxl)
 
-Aedes.gbif <- read_excel("C:\\Users\\Luca Danese\\Desktop\\Uni\\Dottorato\\R4DS\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
+setwd("C:\\Users\\danes\\Desktop\\PLS - Summer School 2022\\PLS---Summer-School-2022")
+
+Aedes.gbif <- read_excel("C:\\Users\\danes\\Desktop\\PLS - Summer School 2022\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
 Aedes.gbif<-as.data.frame(Aedes.gbif)
-data_prova <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
+data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
 
-# Define UI for application that draws a histogram
-ui <- navbarPage(
-    tabPanel(
-    #tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-    leafletOutput("map", width = "100%", height = "100%"),
-    #absolutePanel(top = 10, right = 10,
-    #              selectInput("colors", "Color Scheme",
-    #                          rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
-    #             )
-    #)
-)
-)
+vars <- c("Reale Nativo", "Mondo", "Manuale")
+
+ui <- navbarPage("Aedes", id = "nav",
+
+          tabPanel("Osservazioni Aedes",
+                div(class = "outer",
+
+                    tags$head(
+                      includeCSS("styles.css"),
+                      includeScript("gomap.js")
+                    ),
+
+                    leafletOutput("map", width = "100%", height = "100%"),
+
+                    absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+                                  draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                                  width = 330, height = "auto",
+
+                                  h2("Explorer"),
+
+                                  selectInput("area", "Area", vars),
+                                  conditionalPanel("input.area == 'Manuale'",
+                                                   numericInput("long_sx", "Longitudine Sinistra", 7),
+                                                   numericInput("long_dx", "Longitudine Destra", 15),
+                                                   numericInput("lat_down", "Latitudine Inferiore", 36),
+                                                   numericInput("lat_upw", "Latitudine Superiore", 47)
+                                                   )
+                                  )
+                     )
+
+                  )
+                 )
 
 
-# Define server logic required to draw a histogram
+
 server <- function(input, output, session) {
 
   output$map <- renderLeaflet({
-    # Use leaflet() here, and only include aspects of the map that
-    # won't need to change dynamically (at least, not unless the
-    # entire map is being torn down and recreated).
-    leaflet(data_prova) %>%
+    leaflet() %>%
       addTiles() %>%
-      addMarkers(lat = ~decimalLatitude, lng = ~decimalLongitude,
-                 clusterOptions = markerClusterOptions(), icon = )
+      setView(lng = 93.85, lat = 37.45, zoom = 4)
+  })
+
+  observe({
+
+    areaBy <- input$area
+
+    if (areaBy == "Reale Nativo") {
+      condition <- which(data$decimalLongitude > 66 & data$decimalLongitude < 180 & data$decimalLatitude < 90 & data$decimalLatitude > -90)
+      data <- data[condition,]
+    }
+
+
+    if (areaBy == "Mondo") {
+      data <- data
+    }
+
+    if (areaBy == "Manuale") {
+      condition <- which(data$decimalLongitude > input$long_sx & data$decimalLongitude < input$long_dx & data$decimalLatitude < input$lat_upw & data$decimalLatitude > input$lat_down)
+      data <- data[condition,]
+    }
+
+    leafletProxy("map", data = data) %>%
+      clearShapes() %>%
+      addCircles(lat = ~decimalLatitude, lng = ~decimalLongitude)
   })
 
 
 }
+
 
 # Run the application
 shinyApp(ui = ui, server = server)
