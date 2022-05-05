@@ -11,8 +11,6 @@ Aedes.gbif<-as.data.frame(Aedes.gbif)
 
 data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
 
-#rasterDF <- readRDS("https://www.dropbox.com/s/f1yrp4irc7v2ncx/bio_1.RDS?dl=0")
-
 vars <- c("Reale Nativo", "Mondo", "Manuale")
 vars_bio <- c("Annual Mean Temperature",
               "Mean Diurnal Range",
@@ -129,8 +127,8 @@ server <- function(input, output, session) {
 
     if(bio1Input != "Population Density"){
       bio_number <- which(vars_bio == bio1Input)
-      rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number,".RDS"))
-      #rasterDF <- readRDS(paste0("https://www.dropbox.com/s/f1yrp4irc7v2ncx/bio_",bio_number,".RDS?dl=0"))
+      #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number,".RDS"))
+      rasterDF <- readRDS(paste0("https://github.com/lucadanese/PLS---Summer-School-2022/blob/b1a474be92fb7ecadc8d4f28f52fc804630d91b1/bio_",bio_number,".RDS"))
 
 
     } else {
