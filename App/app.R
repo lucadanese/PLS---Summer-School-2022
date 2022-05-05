@@ -128,12 +128,13 @@ server <- function(input, output, session) {
     if(bio1Input != "Population Density"){
       bio_number <- which(vars_bio == bio1Input)
       #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number,".RDS"))
-      rasterDF <- readRDS(paste0("https://github.com/lucadanese/PLS---Summer-School-2022/blob/b1a474be92fb7ecadc8d4f28f52fc804630d91b1/bio_",bio_number,".RDS"))
-
+      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number,".RDS")
+      rasterDF <- readRDS(url(githubURL))
 
     } else {
-      rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
-      #rasterDF <- readRDS(paste0("https://www.dropbox.com/s/f1yrp4irc7v2ncx/bio_","pop",".RDS?dl=0"))
+      #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
+      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
+      rasterDF <- readRDS(url(githubURL))
     }
 
     rasterDF <- rasterDF[which(rasterDF$x < input$long_dx_1 & rasterDF$x > input$long_sx_1
@@ -160,11 +161,13 @@ server <- function(input, output, session) {
 
     if(bio1Input_2 != "Population Density"){
       bio_number_2 <- which(vars_bio == bio1Input_2)
-      rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number_2,".RDS"))
-      #rasterDF_2 <- readRDS(paste0("https://www.dropbox.com/s/f1yrp4irc7v2ncx/bio_",bio_number_2,".RDS?dl=0"))
+      #rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number_2,".RDS"))
+      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number_2,".RDS")
+      rasterDF_2 <- readRDS(url(githubURL))
     } else {
-      rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
-      #rasterDF_2 <- readRDS(paste0("https://www.dropbox.com/s/f1yrp4irc7v2ncx/bio_","pop",".RDS?dl=0"))
+      #rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
+      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
+      rasterDF_2 <- readRDS(url(githubURL))
     }
 
 

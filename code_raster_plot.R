@@ -20,27 +20,30 @@ gplot_data <- function(x, maxpixels = 5000000)  {
 gplot_wrld_r <- gplot_data(bio)
 
 saveRDS(gplot_wrld_r,"bio_1.RDS")
+write.csv(gplot_wrld_r, "bio_1.csv",row.names = FALSE)
+save(gplot_wrld_r, file = "bio_1.RData")
 
 
-library(curl)
-
-download.file("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_1.RDS", "bio_1.RDS", method="curl")
+a <- read.csv("bio_1.csv")
 
 library(data.table)
-a <- fread("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_1.RDS")
-
-BestMyyu <- readRDS("bio_1.RDS")
+a <- fread("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_1.RData")
 
 
+library(ggplot2)
+ggplot() +
+  geom_tile(data = dplyr::filter(a, !is.na(value)),
+            aes(x = x, y = y), fill = "coral3") +
+  geom_tile(data = a,
+            aes(x = x, y = y, fill = value)) +
+  scale_fill_gradient(paste0("ciao"),
+                      low = 'yellow', high = 'blue',
+                      na.value = NA) +
+  coord_quickmap()
 
-githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",1,".RDS")
+githubURL <- "https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_1.RDS"
+load(url(githubURL))
 
+readRDS(githubURL)
 
-##
-
-bio_number = 1
-rasterDF <- readRDS("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_1.RDS")
-
-
-
-##
+a <- readRDS(url(githubURL))
