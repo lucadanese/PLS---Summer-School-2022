@@ -4,11 +4,12 @@ library(readxl)
 library(raster)
 library(ggplot2)
 library(data.table)
+library(curl)
 
 #setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
 #Aedes.gbif <- read_excel("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
-Aedes.gbif <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv")
+Aedes.gbif <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv",integer64 = "numeric")
 Aedes.gbif<-as.data.frame(Aedes.gbif)
 
 data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
@@ -33,10 +34,10 @@ ui <- navbarPage("Aedes", id = "nav",
                  tabPanel("Osservazioni Aedes",
                           div(class = "outer",
                               tags$head(
-                                #includeCSS("App\www\styles.css"),
-                                tags$link(rel = "stylesheet",  href = "www/style.css"),
-                                #includeScript("gomap.js")
-                                tags$script(src="www/gomap.js")
+                                includeCSS("www/styles.css"),
+                                #tags$link(rel = "stylesheet",  href = "www/style.css"),
+                                includeScript("www/gomap.js")
+                                #tags$script(src="www/gomap.js")
                               ),
 
                               leafletOutput("map", width = "100%", height = "100%"),
@@ -135,13 +136,15 @@ server <- function(input, output, session) {
     if(bio1Input != "Population Density"){
       bio_number <- which(vars_bio == bio1Input)
       #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number,".RDS"))
-      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number,".RDS")
-      rasterDF <- readRDS(url(githubURL))
+      #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number,".RDS")
+      #rasterDF <- readRDS(url(githubURL))
+      rasterDF <- readRDS(paste0("data/bio_",bio_number,".RDS"))
 
     } else {
       #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
-      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
-      rasterDF <- readRDS(url(githubURL))
+      #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
+      #rasterDF <- readRDS(url(githubURL))
+      rasterDF <- readRDS(paste0("data/bio_","pop",".RDS"))
     }
 
     rasterDF <- rasterDF[which(rasterDF$x < input$long_dx_1 & rasterDF$x > input$long_sx_1
@@ -169,12 +172,14 @@ server <- function(input, output, session) {
     if(bio1Input_2 != "Population Density"){
       bio_number_2 <- which(vars_bio == bio1Input_2)
       #rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number_2,".RDS"))
-      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number_2,".RDS")
-      rasterDF_2 <- readRDS(url(githubURL))
+      #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number_2,".RDS")
+      #rasterDF_2 <- readRDS(url(githubURL))
+      rasterDF_2 <- readRDS(paste0("data/bio_",bio_number_2,".RDS"))
     } else {
       #rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_","pop",".RDS"))
-      githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
-      rasterDF_2 <- readRDS(url(githubURL))
+      #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
+      #rasterDF_2 <- readRDS(url(githubURL))
+      rasterDF_2 <- readRDS(paste0("data/bio_","pop",".RDS"))
     }
 
 
