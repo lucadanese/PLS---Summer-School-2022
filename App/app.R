@@ -3,6 +3,7 @@ library(leaflet)
 library(readxl)
 library(raster)
 library(ggplot2)
+library(data.table)
 
 #setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
@@ -32,8 +33,10 @@ ui <- navbarPage("Aedes", id = "nav",
                  tabPanel("Osservazioni Aedes",
                           div(class = "outer",
                               tags$head(
-                                includeCSS("styles.css"),
-                                includeScript("gomap.js")
+                                #includeCSS("App\www\styles.css"),
+                                tags$link(rel = "stylesheet",  href = "www/style.css"),
+                                #includeScript("gomap.js")
+                                tags$script(src="www/gomap.js")
                               ),
 
                               leafletOutput("map", width = "100%", height = "100%"),
