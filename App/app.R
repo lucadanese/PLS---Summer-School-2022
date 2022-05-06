@@ -5,6 +5,7 @@ library(raster)
 library(ggplot2)
 library(data.table)
 library(curl)
+library(sp)
 
 #setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
