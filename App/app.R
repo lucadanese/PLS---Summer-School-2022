@@ -4,12 +4,16 @@ library(readxl)
 library(raster)
 library(ggplot2)
 
-setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
+#setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
-Aedes.gbif <- read_excel("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
+#Aedes.gbif <- read_excel("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
+Aedes.gbif <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv")
 Aedes.gbif<-as.data.frame(Aedes.gbif)
 
 data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
+data$decimalLatitude <- as.numeric(gsub(",", ".", data$decimalLatitude))
+data$decimalLongitude <- as.numeric(gsub(",", ".", data$decimalLongitude))
+
 
 vars <- c("Reale Nativo", "Mondo", "Manuale")
 vars_bio <- c("Annual Mean Temperature",

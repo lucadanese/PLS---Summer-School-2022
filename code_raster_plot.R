@@ -47,3 +47,8 @@ load(url(githubURL))
 readRDS(githubURL)
 
 a <- readRDS(url(githubURL))
+
+
+prova <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv")
+rasterDF_2 <- read_excel(url(githubURL))
+
