@@ -84,8 +84,8 @@ ui <- navbarPage("Aedes", id = "nav",
                                 selectInput("bio2", "Bio", vars_bio),
                                 numericInput("long_sx_2", "Longitudine Sinistra", 66),
                                 numericInput("long_dx_2", "Longitudine Destra", 180),
-                                numericInput("lat_down_2", "Latitudine Inferiore", -90),
-                                numericInput("lat_upw_2", "Latitudine Superiore", 90))
+                                numericInput("lat_down_2", "Latitudine Inferiore", -45),
+                                numericInput("lat_upw_2", "Latitudine Superiore", 0))
                               ,
                               mainPanel(
                                 plotOutput(outputId = "rasterPlot_realenativo")
