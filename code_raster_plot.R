@@ -1,7 +1,7 @@
 
-bio<- raster("C:\\Users\\Luca Danese\\Downloads\\PLS_Aedes\\datasets\\WORLDCLIM\\wc2.1_30s_bio_1.tif")
+bio<- raster("C:\\Users\\Luca Danese\\Downloads\\PLS_Aedes\\datasets\\WORLDCLIM\\wc2.1_30s_bio_15.TIF")
 
-gplot_data <- function(x, maxpixels = 5000000)  {
+gplot_data <- function(x, maxpixels = 10000000)  {
   x <- raster::sampleRegular(x, maxpixels, asRaster = TRUE)
   coords <- raster::xyFromCell(x, seq_len(raster::ncell(x)))
   ## Extract values
@@ -19,8 +19,8 @@ gplot_data <- function(x, maxpixels = 5000000)  {
 
 gplot_wrld_r <- gplot_data(bio)
 
-saveRDS(gplot_wrld_r,"bio_1.RDS")
-write.csv(gplot_wrld_r, "bio_1.csv",row.names = FALSE)
+saveRDS(gplot_wrld_r,"bio_15.RDS")
+write.csv(gplot_wrld_r, "bio_12.csv",row.names = FALSE)
 save(gplot_wrld_r, file = "bio_1.RData")
 
 

@@ -5,9 +5,9 @@ account: daneseluca
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6249322
-bundleId: 5879583
+bundleId: 5919185
 url: https://daneseluca.shinyapps.io/PLS_2022/
-when: 1651874087.0142
-lastSyncTime: 1651874087.0142
+when: 1652882692.84168
+lastSyncTime: 1652882692.84168
 asMultiple: FALSE
 asStatic: FALSE

@@ -6,6 +6,8 @@ library(ggplot2)
 library(data.table)
 library(curl)
 library(sp)
+library(rgdal)
+library(dplyr)
 
 #setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
@@ -13,22 +15,27 @@ library(sp)
 Aedes.gbif <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv",integer64 = "numeric")
 Aedes.gbif<-as.data.frame(Aedes.gbif)
 
-data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude")]
+data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude","year")]
 data$decimalLatitude <- as.numeric(gsub(",", ".", data$decimalLatitude))
 data$decimalLongitude <- as.numeric(gsub(",", ".", data$decimalLongitude))
 
-
 vars <- c("Reale Nativo", "Mondo", "Manuale")
-vars_bio <- c("Annual Mean Temperature",
-              "Mean Diurnal Range",
-              "Isothermality",
-              "Temperature Seasonality",
-              "Max Temperature of Warmest Month",
-              "Min Temperature of Coldest Month",
+vars_bio <- data.frame(
+  bio_name = c("Annual Mean Temperature",
+              #"Mean Diurnal Range",
+              #"Isothermality",
+              #"Temperature Seasonality",
+              #"Max Temperature of Warmest Month",
+              #"Min Temperature of Coldest Month",
               "Temperature Annual Range (BIO5-BIO6)",
-              "Mean Temperature of Wettest Quarter",
-              "Mean Temperature of Driest Quarter",
-              "Population Density")
+              #"Mean Temperature of Wettest Quarter",
+              #"Mean Temperature of Driest Quarter",
+              "Annual Precipitation",
+              "Precipitation Seasonality",
+              "Population Density"),
+  bio_num = c(1,7,12,15,99))
+
+vars_demo_eco <- c("Indice_1","Indice_2")
 
 ui <- navbarPage("Aedes", id = "nav",
 
@@ -55,7 +62,9 @@ ui <- navbarPage("Aedes", id = "nav",
                                                              numericInput("long_dx", "Longitudine Destra", 15),
                                                              numericInput("lat_down", "Latitudine Inferiore", 36),
                                                              numericInput("lat_upw", "Latitudine Superiore", 47)
-                                            )
+                                            ),
+                                            sliderInput("year","Year", min = 1920, max = 2022, value = 2022, step = 2L, animate = TRUE, label = "Anno"),
+
                               )
                           )
 
@@ -67,7 +76,7 @@ ui <- navbarPage("Aedes", id = "nav",
                             fluidRow(
                               h1("Paese studio"),
                               sidebarPanel(
-                                selectInput("bio1", "Bio", vars_bio),
+                                selectInput("bio1", "Bio", vars_bio$bio_name),
                                 numericInput("long_sx_1", "Longitudine Sinistra", 7),
                                 numericInput("long_dx_1", "Longitudine Destra", 15),
                                 numericInput("lat_down_1", "Latitudine Inferiore", 36),
@@ -81,7 +90,7 @@ ui <- navbarPage("Aedes", id = "nav",
                             fluidRow(
                               h1("Reale Nativo"),
                               sidebarPanel(
-                                selectInput("bio2", "Bio", vars_bio),
+                                selectInput("bio2", "Bio", vars_bio$bio_name),
                                 numericInput("long_sx_2", "Longitudine Sinistra", 66),
                                 numericInput("long_dx_2", "Longitudine Destra", 180),
                                 numericInput("lat_down_2", "Latitudine Inferiore", -45),
@@ -90,6 +99,25 @@ ui <- navbarPage("Aedes", id = "nav",
                               mainPanel(
                                 plotOutput(outputId = "rasterPlot_realenativo")
                               )
+                            )
+                          )
+
+                 ),
+
+                 tabPanel("Caratteristiche Demografiche ed Economiche",
+                          fluidPage(
+                            h1("Indicatore di Riferimento"),
+                            h4("Tutti i valori sono riferiti all'ultimo anno disponibile.
+                               I dati possono essere reperiti sui siti di World Bank (https://www.worldbank.org/en/home) e del programma di sviluppo delle Nazioni Unite (https://hdr.undp.org/en)"),
+                            sidebarPanel(
+                              selectInput("bio1", "Bio", vars_bio),
+                              numericInput("long_sx_3", "Longitudine Sinistra", 7),
+                              numericInput("long_dx_3", "Longitudine Destra", 15),
+                              numericInput("lat_down_3", "Latitudine Inferiore", 36),
+                              numericInput("lat_upw_3", "Latitudine Superiore", 47))
+                            ,
+                            mainPanel(
+                              plotOutput(outputId = "PlotDemoEco")
                             )
                           )
 
@@ -104,6 +132,9 @@ server <- function(input, output, session) {
       addTiles() %>%
       setView(lng = 93.85, lat = 37.45, zoom = 4)
   })
+
+
+
 
   observe({
 
@@ -123,6 +154,11 @@ server <- function(input, output, session) {
       data <- data[condition,]
     }
 
+
+    condition_years <- which(data$year <= as.numeric(input$year))
+
+    data <- data[condition_years,]
+
     leafletProxy("map", data = data) %>%
       clearShapes() %>%
       addCircles(lat = ~decimalLatitude, lng = ~decimalLongitude)
@@ -135,7 +171,7 @@ server <- function(input, output, session) {
     bio1Input <- input$bio1
 
     if(bio1Input != "Population Density"){
-      bio_number <- which(vars_bio == bio1Input)
+      bio_number <- vars_bio[which(vars_bio$bio_name == bio1Input),"bio_num"]
       #rasterDF <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number,".RDS"))
       #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number,".RDS")
       #rasterDF <- readRDS(url(githubURL))
@@ -171,7 +207,8 @@ server <- function(input, output, session) {
     bio1Input_2 <- input$bio2
 
     if(bio1Input_2 != "Population Density"){
-      bio_number_2 <- which(vars_bio == bio1Input_2)
+      #bio_number_2 <- which(vars_bio == bio1Input_2)
+      bio_number_2 <- vars_bio[which(vars_bio$bio_name == bio1Input_2),"bio_num"]
       #rasterDF_2 <- readRDS(paste0("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\bio_",bio_number_2,".RDS"))
       #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_",bio_number_2,".RDS")
       #rasterDF_2 <- readRDS(url(githubURL))
@@ -201,6 +238,12 @@ server <- function(input, output, session) {
     )
 
   })
+
+  #observe({
+
+
+
+  #})
 
 }
 

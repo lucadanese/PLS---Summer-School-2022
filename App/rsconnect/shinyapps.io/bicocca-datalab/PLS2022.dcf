@@ -1,0 +1,13 @@
+name: PLS2022
+title: PLS2022
+username:
+account: bicocca-datalab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6278454
+bundleId: 5967109
+url: https://bicocca-datalab.shinyapps.io/PLS2022/
+when: 1654075917.38708
+lastSyncTime: 1654075917.38708
+asMultiple: FALSE
+asStatic: FALSE
