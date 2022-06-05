@@ -8,6 +8,7 @@ library(curl)
 library(sp)
 library(rgdal)
 library(dplyr)
+library(shinythemes)
 
 #setwd("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022")
 
@@ -44,7 +45,59 @@ indicatori <- c("imports",
 
 vars_demo_eco <- c("Indice_1","Indice_2")
 
-ui <- navbarPage("Aedes", id = "nav",
+ui <- navbarPage("Aedes", id = "nav", theme = shinytheme("united"),
+
+                 tabPanel("Introduzione",
+
+                    h1("Aedes albopictus: la zanzara tigre asiatica"),
+
+                    #img(src = "aedes_img.png", height = 720, width = 1080)
+                    #mainPanel(img(src = "aedes_img.png",height = 650, width = 720)),
+                    #sidebarPanel(h2("la zanzara blabla"))
+
+                    fluidRow(
+                      column(
+                        width = 7,
+
+                        p("Il cambiamento climatico, la continua globalizzazione, non solo portano cambiamenti nelle nostre vite, ma anche in quelle degli esseri viventi che ci
+                          circondano. Un esempio di questo fenomeno riguarda la zanzara tigre di orgine asiatica, scientificamente chiamata Aedes Albopictus.
+                          Questa specie di zanzara nasce in oriente, in particolare nei tropici del sudest asiatico, le isole del pacifico e dell'oceano indiano, ma anche in China, Giappone e a ovest del
+                          Madagascar.
+                          Questa specie e ad oggi diffusa in tutto il mondo, ed è interessantea andare a studiare come avviene la sua diffusione e quali luoghi individua come più adatti alla sua riproduzione.
+                          Per fare un esempio: la Pianura Padana presenta numerosissime colonie di questa zanzara, come mai? La zanzara tigre ha come metodo principale di diffusione i copertoni delle auto, o dei camion,
+                          che vengono trasportati da una parte all'altra del mondo. Il motivo è molto semplice: i copertoni sono un ottimo raccoglitore di acqua piovana, al cui interno posson essere presenti uova o larve.
+                          Lo scopo di questo lavoro è di provare a capire quali possono essere i fattori che hanno portato alla diffusione in alcune zone di questa zanzara, e chiedersi se altre zone possono essere potenzialmente
+                          'invase' da questo insetto."),
+
+                        p("La dashboard è suddivisa in tre pannelli: nel primo troverete una mappa con la diffusione negli anni della zanzara, potete concentrarvi sul reale nativo, oppure manualmente andare a studiare le regioni che più
+                          vi interessano. La seconda sezione invece vi permette di confrontare le caratteristiche morfologiche e la densità di popolazione del reale nativo e di un territorio a vostra scelta. Questo vi permette di poter capire
+                          se una zona è potenzialmente un luogo che può ospitare questo insetto. Infine, nella terza sezione, troverete alcuni indicatori economici e demografici con i quali studiare se certi fattori possono essere determinanti o meno
+                          per la diffusione della zanzara."),
+
+                        p("Vi riportiamo qua sotto una mappa con latitudine e longitudine che vi può permettere di navigare meglio sulle mappe del mondo."),
+
+                        img(
+                          height = 800,
+                          width = 1280,
+
+                          src = "world.jpg"
+                        )
+
+
+                      ),
+                      column(
+                        width = 2,
+
+                        img(
+                          height = 300,
+                          width = 450,
+
+                          src = "aedes_img.png"
+                        ),
+                      ), # end column
+                    ), # end fluidRow
+
+                 ),
 
                  tabPanel("Osservazioni Aedes",
                           div(class = "outer",
@@ -77,8 +130,8 @@ ui <- navbarPage("Aedes", id = "nav",
 
                  ),
 
-                 tabPanel("Caratteristiche Morfologiche",
-
+                 tabPanel("Caratteristiche Morfologiche e Densità di Popolazione",
+                          h4("In questa pagina potete mettere a confronto alcuni aspetti morfologici del territorio in analisi e del reale nativo della zanzara tigre. Inoltre potete confrontare le densità di popolazione."),
                           fluidPage(
                             fluidRow(
                               h1("Paese studio"),
@@ -114,8 +167,7 @@ ui <- navbarPage("Aedes", id = "nav",
                  tabPanel("Caratteristiche Demografiche ed Economiche",
                           fluidPage(
                             h1("Indicatore di Riferimento"),
-                            h4("Tutti i valori sono riferiti all'ultimo anno disponibile.
-                               I dati possono essere reperiti sui siti di World Bank (https://www.worldbank.org/en/home) e del programma di sviluppo delle Nazioni Unite (https://hdr.undp.org/en)"),
+                            h4("In questa pagina potete trovare alcuni indicatori demografici ed economici dei paesi del mondo. I dati sono riferiti all'ultimo anno disponibile (2019), e possono essere reperiti sui siti di World Bank (https://www.worldbank.org/en/home) e del programma di sviluppo delle Nazioni Unite (https://hdr.undp.org/en)"),
                             sidebarPanel(
                               selectInput("indicatore", "Indicatore", indicatori),
                               numericInput("long_sx_3", "Longitudine Sinistra", 7),
@@ -189,6 +241,10 @@ server <- function(input, output, session) {
       #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
       #rasterDF <- readRDS(url(githubURL))
       rasterDF <- readRDS(paste0("data/bio_","pop",".RDS"))
+
+      # take the log of the population density
+      rasterDF$value <- log(rasterDF$value)
+      #
     }
 
     rasterDF <- rasterDF[which(rasterDF$x < input$long_dx_1 & rasterDF$x > input$long_sx_1
@@ -225,6 +281,7 @@ server <- function(input, output, session) {
       #githubURL <- paste0("https://github.com/lucadanese/PLS---Summer-School-2022/raw/main/bio_","pop",".RDS")
       #rasterDF_2 <- readRDS(url(githubURL))
       rasterDF_2 <- readRDS(paste0("data/bio_","pop",".RDS"))
+      rasterDF_2$value <- log(rasterDF_2$value)
     }
 
 
@@ -258,7 +315,9 @@ server <- function(input, output, session) {
       ggplot(data_map, aes(long,lat, group=group, fill = var_plot)) +
       geom_polygon() +
       coord_quickmap() +
-      theme_void()
+      guides(fill=guide_legend(title=input$indicatore)),
+      width = 1000,
+      height = 1000
 
     )
 
