@@ -5,9 +5,9 @@ account: bicocca-datalab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6278454
-bundleId: 5967109
+bundleId: 5967250
 url: https://bicocca-datalab.shinyapps.io/PLS2022/
-when: 1654075917.38708
-lastSyncTime: 1654075917.38708
+when: 1654078876.74107
+lastSyncTime: 1654078876.74107
 asMultiple: FALSE
 asStatic: FALSE

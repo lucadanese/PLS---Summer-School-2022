@@ -13,7 +13,9 @@ library(dplyr)
 
 #Aedes.gbif <- read_excel("C:\\Users\\Luca Danese\\Desktop\\PLS---Summer-School-2022\\Aedes albopictus_GBIF.xlsx")
 Aedes.gbif <- fread("https://raw.githubusercontent.com/lucadanese/PLS---Summer-School-2022/main/aedes_albopictus_GBIF.csv",integer64 = "numeric")
-Aedes.gbif<-as.data.frame(Aedes.gbif)
+Aedes.gbif <- as.data.frame(Aedes.gbif)
+
+data_map <- readRDS(paste0("data/Maps_Worldbank.RDS"))
 
 data <- Aedes.gbif[1:60849,c("decimalLatitude","decimalLongitude","year")]
 data$decimalLatitude <- as.numeric(gsub(",", ".", data$decimalLatitude))
@@ -34,6 +36,11 @@ vars_bio <- data.frame(
               "Precipitation Seasonality",
               "Population Density"),
   bio_num = c(1,7,12,15,99))
+
+indicatori <- c("imports",
+                "exports",
+                "container",
+                "resource")
 
 vars_demo_eco <- c("Indice_1","Indice_2")
 
@@ -110,7 +117,7 @@ ui <- navbarPage("Aedes", id = "nav",
                             h4("Tutti i valori sono riferiti all'ultimo anno disponibile.
                                I dati possono essere reperiti sui siti di World Bank (https://www.worldbank.org/en/home) e del programma di sviluppo delle Nazioni Unite (https://hdr.undp.org/en)"),
                             sidebarPanel(
-                              selectInput("bio1", "Bio", vars_bio),
+                              selectInput("indicatore", "Indicatore", indicatori),
                               numericInput("long_sx_3", "Longitudine Sinistra", 7),
                               numericInput("long_dx_3", "Longitudine Destra", 15),
                               numericInput("lat_down_3", "Latitudine Inferiore", 36),
@@ -239,11 +246,25 @@ server <- function(input, output, session) {
 
   })
 
-  #observe({
+  observe({
+
+    data_map[,"var_plot"] = data_map[,input$indicatore]
+
+    data_map <- data_map[which(data_map$long < input$long_dx_3 & data_map$long > input$long_sx_3
+                                   & data_map$lat < input$lat_upw_3 & data_map$lat > input$lat_down_3),]
+
+    output$PlotDemoEco <- renderPlot(
+
+      ggplot(data_map, aes(long,lat, group=group, fill = var_plot)) +
+      geom_polygon() +
+      coord_quickmap() +
+      theme_void()
+
+    )
 
 
 
-  #})
+  })
 
 }
 
